@@ -1,10 +1,13 @@
 package com.example.administrator.weathercool.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.administrator.weathercool.db.City;
 import com.example.administrator.weathercool.db.County;
 import com.example.administrator.weathercool.db.Province;
+import com.example.administrator.weathercool.gson.Weathers;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,5 +86,21 @@ public class Utility {
         return false;
     }
 
+    public static Weathers handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            Log.i("bbbbbbbbbbbbbbbbb", "handleWeatherResponse: "+jsonArray.length());
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            Log.i("bbbbbbbbbbbbbbbbb", "handleWeatherResponse: "+weatherContent);
+            Gson gson = new Gson();
+            Weathers weathers = gson.fromJson(weatherContent,Weathers.class);
+         //   Log.i("bbbbbbbbbbbbbbbbb", "handleWeatherResponse: "+weathers.getStatus().toString());
+            return weathers;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

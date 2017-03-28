@@ -2,7 +2,9 @@ package com.example.administrator.weathercool;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,8 @@ import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Administrator on 2017/3/26.
@@ -86,6 +90,13 @@ public class AreaFragment extends Fragment {
             } else if (currrentLevel == LEVEL_CITY) {
                 mCity = mCityList.get(position);
                 queryCounties();
+            } else if (currrentLevel == LEVEL_COUNTY) {
+                String weatherId = mCountyList.get(position).getWeatherId();
+                Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                intent.putExtra("weather_id", weatherId);
+                startActivity(intent);
+                getActivity().finish();
+                Log.i("aaaaaaaa", "queryCounties: " + weatherId);
             }
         }
     };
@@ -124,6 +135,7 @@ public class AreaFragment extends Fragment {
         mTitleText.setText(mCity.getCityName());
         mBackButton.setVisibility(View.VISIBLE);
         mCountyList = DataSupport.where("cityid=?", String.valueOf(mCity.getId())).find(County.class);
+
         if (mCountyList.size() > 0) {
             mDataList.clear();
             for (County county : mCountyList) {
@@ -135,6 +147,7 @@ public class AreaFragment extends Fragment {
         } else {
             int provinceCode = mProvince.getProvinceCode();
             int cityCode = mCity.getCityCode();
+            Log.i(TAG, "queryCounties: " + cityCode);
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
             queryFromServer(address, "county");
         }
